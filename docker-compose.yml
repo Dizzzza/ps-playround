@@ -1,0 +1,67 @@
+version: "3.8"
+
+services:
+  # MongoDB сервис
+  mongodb:
+    image: mongo:7.0
+    container_name: mongo_db
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password123
+      - MONGO_INITDB_DATABASE=myapp
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # Бэкенд сервис
+  back:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - GRAPHQL_PATH=graphql
+      - PORT=3001
+      - MONGODB_URI=mongodb://admin:password123@mongodb:27017/myapp?authSource=admin
+      - CORS_ORIGIN=*
+      - CORS_CREDENTIALS=true
+    volumes:
+      - ./back:/app
+      - /app/node_modules
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # Фронтенд сервис
+  front:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_GRAPHQL_URL=http://localhost:3001/graphql
+    volumes:
+      - ./front:/app
+      - /app/node_modules
+    depends_on:
+      - back
+    restart: unless-stopped
+    networks:
+      - app-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  app-network:
+    driver: bridge

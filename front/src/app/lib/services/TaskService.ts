@@ -6,13 +6,13 @@ import {
   CREATE_TASK,
   UPDATE_TASK,
   DELETE_TASK,
-  DELETE_COMPLETED_TASKS,
 } from "../graphql/queries";
 
 export class TaskService {
   static async getTasks(): Promise<Task[]> {
     try {
       const data = await graphQLClient.request<{ tasks: Task[] }>(GET_TASKS);
+      data.tasks.forEach((task) => (task.id = task.id_));
       return data.tasks;
     } catch (error) {
       console.error("Error fetching tasks:", error);
@@ -46,20 +46,19 @@ export class TaskService {
   }
 
   static async updateTask(
-    id: string,
     updates: Partial<{
+      id: string;
       completed: boolean;
       title: string;
       description: string;
-      priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+      priority: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
     }>
   ): Promise<Task> {
     try {
       const data = await graphQLClient.request<{ updateTask: Task }>(
         UPDATE_TASK,
         {
-          id,
-          ...updates,
+          input: updates,
         }
       );
       return data.updateTask;
@@ -71,25 +70,13 @@ export class TaskService {
 
   static async deleteTask(id: string): Promise<boolean> {
     try {
-      const data = await graphQLClient.request<{ deleteTask: boolean }>(
+      const data = await graphQLClient.request<{ deleteTask: Task }>(
         DELETE_TASK,
-        { id }
+        { id: id }
       );
-      return data.deleteTask;
+      return data.deleteTask ? true : false;
     } catch (error) {
       console.error("Error deleting task:", error);
-      throw error;
-    }
-  }
-
-  static async deleteCompletedTasks(): Promise<number> {
-    try {
-      const data = await graphQLClient.request<{
-        deleteCompletedTasks: number;
-      }>(DELETE_COMPLETED_TASKS);
-      return data.deleteCompletedTasks;
-    } catch (error) {
-      console.error("Error deleting completed tasks:", error);
       throw error;
     }
   }

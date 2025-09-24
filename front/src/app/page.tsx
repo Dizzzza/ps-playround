@@ -47,6 +47,7 @@ export default function Home() {
     } catch (error) {
       message.error("Ошибка при загрузке задач");
     } finally {
+      console.log(tasks);
       setLoading(false);
     }
   };
@@ -70,7 +71,8 @@ export default function Home() {
   const handleSubmit = async (values: any) => {
     try {
       if (editingTask) {
-        await TaskService.updateTask(editingTask.id, values);
+        values.id = editingTask.id; // <-- id, а не id_
+        await TaskService.updateTask(values);
         message.success("Задача обновлена");
       } else {
         const taskInput: TaskInput = {
@@ -101,7 +103,10 @@ export default function Home() {
 
   const handleToggleComplete = async (task: Task) => {
     try {
-      await TaskService.updateTask(task.id, { completed: !task.completed });
+      await TaskService.updateTask({
+        id: task.id, // <-- id, а не id_
+        completed: !task.completed, // только если добавим completed в UpdateTaskInput
+      });
       message.success(
         `Задача отмечена как ${
           task.completed ? "незавершенная" : "завершенная"
@@ -113,16 +118,6 @@ export default function Home() {
     }
   };
 
-  const handleDeleteCompleted = async () => {
-    try {
-      const deletedCount = await TaskService.deleteCompletedTasks();
-      message.success(`Удалено ${deletedCount} завершенных задач`);
-      loadTasks();
-    } catch (error) {
-      message.error("Ошибка при удалении завершенных задач");
-    }
-  };
-
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "LOW":
@@ -131,7 +126,7 @@ export default function Home() {
         return "orange";
       case "HIGH":
         return "red";
-      case "URGENT":
+      case "CRITICAL":
         return "purple";
       default:
         return "default";
@@ -207,8 +202,6 @@ export default function Home() {
     },
   ];
 
-  const completedTasksCount = tasks.filter((task) => task.completed).length;
-
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <Card>
@@ -222,19 +215,6 @@ export default function Home() {
             >
               Создать задачу
             </Button>
-            {completedTasksCount > 0 && (
-              <Popconfirm
-                title="Удалить завершенные задачи?"
-                description={`Вы уверены, что хотите удалить ${completedTasksCount} завершенных задач?`}
-                onConfirm={handleDeleteCompleted}
-                okText="Да"
-                cancelText="Нет"
-              >
-                <Button danger>
-                  Удалить завершенные ({completedTasksCount})
-                </Button>
-              </Popconfirm>
-            )}
           </Space>
         </div>
 
@@ -281,7 +261,7 @@ export default function Home() {
                 <Option value="LOW">Низкий</Option>
                 <Option value="MEDIUM">Средний</Option>
                 <Option value="HIGH">Высокий</Option>
-                <Option value="URGENT">Срочный</Option>
+                <Option value="CRITICAL">Срочный</Option>
               </Select>
             </Form.Item>
 

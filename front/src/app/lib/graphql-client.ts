@@ -7,6 +7,7 @@ export const graphQLClient = new GraphQLClient(graphqlAPI);
 
 export interface Task {
   id: string;
+  id_: string;
   title: string;
   description: string;
   completed: boolean;
