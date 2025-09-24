@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Field, InputType, ID, PartialType, ObjectType } from '@nestjs/graphql';
+import { Field, InputType, ID, ObjectType } from '@nestjs/graphql';
 import { Document } from 'mongoose';
 
 export enum Priority {
