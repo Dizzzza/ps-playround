@@ -2,5 +2,7 @@
 .env.local
 /.next/
 .next
+.next/
+front/.next/
 node_modules
 next-env.d.ts
