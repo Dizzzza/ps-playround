@@ -1,16 +1,12 @@
 {
   "name": "myTodo",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
   "scripts": {
     "start:back": "cd back && pnpm install && pnpm run build && pnpm run start",
     "start:front": "cd front && npm install && npm run build && npm run start",
-    "start": "concurrently \"pnpm run start:back\" \"pnpm run start:front\""
+    "start": "concurrently \"pnpm run start:back\" \"npm run start:front\""
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "concurrently": "^9.2.1"
   }
