@@ -5,10 +5,10 @@ WORKDIR /app
 # Устанавливаем pnpm
 RUN npm install -g pnpm
 
-# Копируем package.json и lock-файлы для корня
-COPY package.json pnpm-lock.yaml ./
+# Копируем package.json (и lock-файл, если есть)
+COPY pnpm-lock.yaml ./  
 
-# Устанавливаем зависимости корня (concurrently и т.д.)
+# Устанавливаем зависимости
 RUN pnpm install --shamefully-hoist
 
 # Копируем весь проект

@@ -37,7 +37,7 @@ export default function Home() {
 
   useEffect(() => {
     loadTasks();
-  });
+  }, []);
 
   const loadTasks = async () => {
     setLoading(true);
