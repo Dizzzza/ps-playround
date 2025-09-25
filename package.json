@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start:back": "cd back && npm install && npm run build && npm run start",
-    "start:front": "cd front && npm install && npm run dev",
-    "start": "concurrently \"npm run start:back\" \"npm run start:front\""
+    "start:back": "cd back && pnpm install && pnpm run build && pnpm run start",
+    "start:front": "cd front && pnpm install && pnpm run dev",
+    "start": "concurrently \"pnpm run start:back\" \"pnpm run start:front\""
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
