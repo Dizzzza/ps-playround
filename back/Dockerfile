@@ -2,16 +2,14 @@ FROM node:24-alpine
 
 WORKDIR /usr/src/app
 
-RUN npm install -g pnpm
-
 COPY package*.json ./
 
-RUN pnpm install
+RUN npm install
 
 COPY . .
 
-RUN pnpm run build
+RUN npm run build
 
 EXPOSE 3001
 
-CMD ["pnpm", "run", "start:prod"]
+CMD ["npm", "run", "start:prod"]
