@@ -15,8 +15,8 @@ import { Connection } from 'mongoose';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         uri: configService.get<string>('MONGODB_URI'),
-        retryAttempts: 5,
-        retryDelay: 1000,
+        retryAttempts: Number(configService.get<string>('MONGODB_RETRY_ATTEMPTS') ?? 5),
+        retryDelay: Number(configService.get<string>('MONGODB_RETRY_DELAY') ?? 1000),
       }),
       inject: [ConfigService],
     }),

@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import {
   Table,
   Button,
@@ -14,16 +14,16 @@ import {
   Card,
   Tag,
   Popconfirm,
-} from "antd";
+} from 'antd';
 import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
   CheckOutlined,
   CloseOutlined,
-} from "@ant-design/icons";
-import { Task, TaskInput } from "./lib/graphql-client";
-import { TaskService } from "./lib/services/TaskService";
+} from '@ant-design/icons';
+import { Task, TaskInput } from './lib/graphql-client';
+import { TaskService } from './lib/services/TaskService';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -37,15 +37,15 @@ export default function Home() {
 
   useEffect(() => {
     loadTasks();
-  }, []);
+  });
 
   const loadTasks = async () => {
     setLoading(true);
     try {
       const tasksData = await TaskService.getTasks();
       setTasks(tasksData);
-    } catch (error) {
-      message.error("Ошибка при загрузке задач");
+    } catch {
+      message.error('Ошибка при загрузке задач');
     } finally {
       console.log(tasks);
       setLoading(false);
@@ -68,12 +68,11 @@ export default function Home() {
     setModalVisible(true);
   };
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: Partial<TaskInput>) => {
     try {
       if (editingTask) {
-        values.id = editingTask.id; // <-- id, а не id_
-        await TaskService.updateTask(values);
-        message.success("Задача обновлена");
+        await TaskService.updateTask(editingTask._id, values);
+        message.success('Задача обновлена');
       } else {
         const taskInput: TaskInput = {
           title: values.title,
@@ -81,63 +80,58 @@ export default function Home() {
           priority: values.priority,
         };
         await TaskService.createTask(taskInput);
-        message.success("Задача создана");
+        message.success('Задача создана');
       }
       setModalVisible(false);
       form.resetFields();
       loadTasks();
-    } catch (error) {
-      message.error("Ошибка при сохранении задачи");
+    } catch {
+      message.error('Ошибка при сохранении задачи');
     }
   };
 
   const handleDelete = async (id: string) => {
     try {
       await TaskService.deleteTask(id);
-      message.success("Задача удалена");
+      message.success('Задача удалена');
       loadTasks();
-    } catch (error) {
-      message.error("Ошибка при удалении задачи");
+    } catch {
+      message.error('Ошибка при удалении задачи');
     }
   };
 
   const handleToggleComplete = async (task: Task) => {
     try {
-      await TaskService.updateTask({
-        id: task.id, // <-- id, а не id_
-        completed: !task.completed, // только если добавим completed в UpdateTaskInput
+      await TaskService.updateTask(task._id, {
+        completed: !task.completed,
       });
-      message.success(
-        `Задача отмечена как ${
-          task.completed ? "незавершенная" : "завершенная"
-        }`
-      );
+      message.success(`Задача отмечена как ${task.completed ? 'незавершенная' : 'завершенная'}`);
       loadTasks();
-    } catch (error) {
-      message.error("Ошибка при обновлении задачи");
+    } catch {
+      message.error('Ошибка при обновлении задачи');
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case "LOW":
-        return "blue";
-      case "MEDIUM":
-        return "orange";
-      case "HIGH":
-        return "red";
-      case "CRITICAL":
-        return "purple";
+      case 'LOW':
+        return 'blue';
+      case 'MEDIUM':
+        return 'orange';
+      case 'HIGH':
+        return 'red';
+      case 'CRITICAL':
+        return 'purple';
       default:
-        return "default";
+        return 'default';
     }
   };
 
   const columns = [
     {
-      title: "Статус",
-      dataIndex: "completed",
-      key: "completed",
+      title: 'Статус',
+      dataIndex: 'completed',
+      key: 'completed',
       width: 100,
       render: (completed: boolean, record: Task) => (
         <Switch
@@ -149,47 +143,41 @@ export default function Home() {
       ),
     },
     {
-      title: "Заголовок",
-      dataIndex: "title",
-      key: "title",
+      title: 'Заголовок',
+      dataIndex: 'title',
+      key: 'title',
     },
     {
-      title: "Описание",
-      dataIndex: "description",
-      key: "description",
-      render: (text: string) => text || "-",
+      title: 'Описание',
+      dataIndex: 'description',
+      key: 'description',
+      render: (text: string) => text || '-',
     },
     {
-      title: "Приоритет",
-      dataIndex: "priority",
-      key: "priority",
-      render: (priority: string) => (
-        <Tag color={getPriorityColor(priority)}>{priority}</Tag>
-      ),
+      title: 'Приоритет',
+      dataIndex: 'priority',
+      key: 'priority',
+      render: (priority: string) => <Tag color={getPriorityColor(priority)}>{priority}</Tag>,
     },
     {
-      title: "Дата создания",
-      dataIndex: "createdAt",
-      key: "createdAt",
-      render: (date: string) => new Date(date).toLocaleString("ru-RU"),
+      title: 'Дата создания',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (date: string) => new Date(date).toLocaleString('ru-RU'),
     },
     {
-      title: "Действия",
-      key: "actions",
+      title: 'Действия',
+      key: 'actions',
       width: 150,
-      render: (_: any, record: Task) => (
+      render: (_: number, record: Task) => (
         <Space>
-          <Button
-            type="link"
-            icon={<EditOutlined />}
-            onClick={() => handleEdit(record)}
-          >
+          <Button type="link" icon={<EditOutlined />} onClick={() => handleEdit(record)}>
             Редактировать
           </Button>
           <Popconfirm
             title="Удалить задачу?"
             description="Вы уверены, что хотите удалить эту задачу?"
-            onConfirm={() => handleDelete(record.id)}
+            onConfirm={() => handleDelete(record._id)}
             okText="Да"
             cancelText="Нет"
           >
@@ -208,11 +196,7 @@ export default function Home() {
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">Менеджер задач</h1>
           <Space>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={handleCreate}
-            >
+            <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
               Создать задачу
             </Button>
           </Space>
@@ -227,7 +211,7 @@ export default function Home() {
         />
 
         <Modal
-          title={editingTask ? "Редактировать задачу" : "Создать задачу"}
+          title={editingTask ? 'Редактировать задачу' : 'Создать задачу'}
           open={modalVisible}
           onCancel={() => {
             setModalVisible(false);
@@ -239,21 +223,18 @@ export default function Home() {
             form={form}
             layout="vertical"
             onFinish={handleSubmit}
-            initialValues={{ priority: "MEDIUM" }}
+            initialValues={{ priority: 'MEDIUM' }}
           >
             <Form.Item
               name="title"
               label="Заголовок"
-              rules={[{ required: true, message: "Введите заголовок задачи" }]}
+              rules={[{ required: true, message: 'Введите заголовок задачи' }]}
             >
               <Input placeholder="Введите заголовок задачи" />
             </Form.Item>
 
             <Form.Item name="description" label="Описание">
-              <TextArea
-                rows={4}
-                placeholder="Введите описание задачи (необязательно)"
-              />
+              <TextArea rows={4} placeholder="Введите описание задачи (необязательно)" />
             </Form.Item>
 
             <Form.Item name="priority" label="Приоритет">
@@ -268,7 +249,7 @@ export default function Home() {
             <Form.Item>
               <Space>
                 <Button type="primary" htmlType="submit">
-                  {editingTask ? "Обновить" : "Создать"}
+                  {editingTask ? 'Обновить' : 'Создать'}
                 </Button>
                 <Button
                   onClick={() => {
