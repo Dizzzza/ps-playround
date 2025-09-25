@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start:back": "cd back && pnpm install && pnpm run build && pnpm run start",
-    "start:front": "cd front && pnpm install && pnpm run dev",
+    "start:front": "cd front && pnpm install && pnpm run buikd && pnpm run start",
     "start": "concurrently \"pnpm run start:back\" \"pnpm run start:front\""
   },
   "devDependencies": {
