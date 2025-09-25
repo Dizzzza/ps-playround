@@ -9,8 +9,7 @@ async function bootstrap() {
 
   // Получаем настройки CORS из .env
   const corsOrigin = configService.get<string>('CORS_ORIGIN') || '*';
-  const corsCredentials =
-    configService.get<boolean>('CORS_CREDENTIALS') || false;
+  const corsCredentials = configService.get<boolean>('CORS_CREDENTIALS') || false;
 
   app.enableCors({
     origin: corsOrigin,

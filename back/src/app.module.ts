@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
+import { MongooseModule, getConnectionToken } from '@nestjs/mongoose';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { AppResolver } from './app.resolver';
-import { AppService } from './app.service';
-import { MongooseModule } from '@nestjs/mongoose';
-import { join } from 'path';
-import { Task, TaskSchema } from './app.schema';
+import { buildGraphqlSchema } from './app.graphql';
+import { Connection } from 'mongoose';
 
 @Module({
   imports: [
@@ -17,21 +15,23 @@ import { Task, TaskSchema } from './app.schema';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         uri: configService.get<string>('MONGODB_URI'),
+        retryAttempts: 5,
+        retryDelay: 1000,
       }),
       inject: [ConfigService],
     }),
-    MongooseModule.forFeature([{ name: Task.name, schema: TaskSchema }]), // ✅ вот это нужно
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      imports: [ConfigModule, MongooseModule],
+      inject: [ConfigService, getConnectionToken()],
+      useFactory: (configService: ConfigService, connection: Connection) => ({
         sortSchema: true,
-        path: configService.get<string>('GRAPHQL_PATH') || '/graphql', // ✅ путь из env
+        schema: buildGraphqlSchema(connection),
+        path: configService.get<string>('GRAPHQL_PATH') || '/graphql',
+        playground: configService.get<boolean>('GRAPHQL_PLAYGROUND') ?? true,
+        introspection: configService.get<boolean>('GRAPHQL_INTROSPECTION') ?? true,
       }),
     }),
   ],
-  providers: [AppService, AppResolver],
 })
 export class AppModule {}
