@@ -1,6 +1,6 @@
 FROM node:24-alpine
 
-WORKDIR /usr/src/app
+WORKDIR /user/src/app
 
 RUN npm install -g pnpm
 
@@ -14,4 +14,4 @@ RUN pnpm run build
 
 EXPOSE 3001
 
-CMD ["pnpm", "run", "start:prod"]
+CMD ["pnpm", "start"]
