@@ -1,40 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import {
-  Table,
-  Button,
-  Space,
-  Modal,
-  Form,
-  Input,
-  Select,
-  Switch,
-  message,
-  Card,
-  Tag,
-  Popconfirm,
-} from 'antd';
-import {
-  PlusOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  CheckOutlined,
-  CloseOutlined,
-} from '@ant-design/icons';
-import { Task, TaskInput } from './lib/graphql-client';
+import { Card, message } from 'antd';
+import { Task, TaskInput } from './types/taskTypes';
 import { TaskService } from './lib/services/TaskService';
+import { TaskTable } from './components/TaskTable';
+import { TaskModal } from './components/TaskModal';
+import { PageHeader } from './components/Header';
 import styles from './styles/Home.module.scss';
-
-const { Option } = Select;
-const { TextArea } = Input;
 
 export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [form] = Form.useForm();
 
   useEffect(() => {
     loadTasks();
@@ -48,24 +27,17 @@ export default function Home() {
     } catch {
       message.error('Ошибка при загрузке задач');
     } finally {
-      console.log(tasks);
       setLoading(false);
     }
   };
 
   const handleCreate = () => {
     setEditingTask(null);
-    form.resetFields();
     setModalVisible(true);
   };
 
   const handleEdit = (task: Task) => {
     setEditingTask(task);
-    form.setFieldsValue({
-      title: task.title,
-      description: task.description,
-      priority: task.priority,
-    });
     setModalVisible(true);
   };
 
@@ -76,15 +48,14 @@ export default function Home() {
         message.success('Задача обновлена');
       } else {
         const taskInput: TaskInput = {
-          title: values.title,
+          title: values.title!,
           description: values.description,
-          priority: values.priority,
+          priority: values.priority!,
         };
         await TaskService.createTask(taskInput);
         message.success('Задача создана');
       }
       setModalVisible(false);
-      form.resetFields();
       loadTasks();
     } catch {
       message.error('Ошибка при сохранении задачи');
@@ -113,157 +84,25 @@ export default function Home() {
     }
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'LOW':
-        return 'blue';
-      case 'MEDIUM':
-        return 'orange';
-      case 'HIGH':
-        return 'red';
-      case 'CRITICAL':
-        return 'purple';
-      default:
-        return 'default';
-    }
-  };
-
-  const columns = [
-    {
-      title: 'Статус',
-      dataIndex: 'completed',
-      key: 'completed',
-      width: 100,
-      render: (completed: boolean, record: Task) => (
-        <Switch
-          checked={completed}
-          onChange={() => handleToggleComplete(record)}
-          checkedChildren={<CheckOutlined />}
-          unCheckedChildren={<CloseOutlined />}
-        />
-      ),
-    },
-    {
-      title: 'Заголовок',
-      dataIndex: 'title',
-      key: 'title',
-    },
-    {
-      title: 'Описание',
-      dataIndex: 'description',
-      key: 'description',
-      render: (text: string) => text || '-',
-    },
-    {
-      title: 'Приоритет',
-      dataIndex: 'priority',
-      key: 'priority',
-      render: (priority: string) => <Tag color={getPriorityColor(priority)}>{priority}</Tag>,
-    },
-    {
-      title: 'Дата создания',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      render: (date: string) => new Date(date).toLocaleString('ru-RU'),
-    },
-    {
-      title: 'Действия',
-      key: 'actions',
-      width: 150,
-      render: (_: number, record: Task) => (
-        <Space>
-          <Button type="link" icon={<EditOutlined />} onClick={() => handleEdit(record)}>
-            Редактировать
-          </Button>
-          <Popconfirm
-            title="Удалить задачу?"
-            description="Вы уверены, что хотите удалить эту задачу?"
-            onConfirm={() => handleDelete(record._id)}
-            okText="Да"
-            cancelText="Нет"
-          >
-            <Button type="link" danger icon={<DeleteOutlined />}>
-              Удалить
-            </Button>
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ];
-
   return (
     <div className={styles.container}>
       <Card>
-        <div className={styles.header}>
-          <h1 className={styles.title}>Менеджер задач</h1>
-          <Space>
-            <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
-              Создать задачу
-            </Button>
-          </Space>
-        </div>
+        <PageHeader onCreate={handleCreate} />
 
-        <Table
-          columns={columns}
-          dataSource={tasks}
-          rowKey="id"
+        <TaskTable
+          tasks={tasks}
           loading={loading}
-          pagination={{ pageSize: 10 }}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onToggleComplete={handleToggleComplete}
         />
 
-        <Modal
-          title={editingTask ? 'Редактировать задачу' : 'Создать задачу'}
-          open={modalVisible}
-          onCancel={() => {
-            setModalVisible(false);
-            form.resetFields();
-          }}
-          footer={null}
-        >
-          <Form
-            form={form}
-            layout="vertical"
-            onFinish={handleSubmit}
-            initialValues={{ priority: 'MEDIUM' }}
-          >
-            <Form.Item
-              name="title"
-              label="Заголовок"
-              rules={[{ required: true, message: 'Введите заголовок задачи' }]}
-            >
-              <Input placeholder="Введите заголовок задачи" />
-            </Form.Item>
-
-            <Form.Item name="description" label="Описание">
-              <TextArea rows={4} placeholder="Введите описание задачи (необязательно)" />
-            </Form.Item>
-
-            <Form.Item name="priority" label="Приоритет">
-              <Select>
-                <Option value="LOW">Низкий</Option>
-                <Option value="MEDIUM">Средний</Option>
-                <Option value="HIGH">Высокий</Option>
-                <Option value="CRITICAL">Срочный</Option>
-              </Select>
-            </Form.Item>
-
-            <Form.Item>
-              <Space>
-                <Button type="primary" htmlType="submit">
-                  {editingTask ? 'Обновить' : 'Создать'}
-                </Button>
-                <Button
-                  onClick={() => {
-                    setModalVisible(false);
-                    form.resetFields();
-                  }}
-                >
-                  Отмена
-                </Button>
-              </Space>
-            </Form.Item>
-          </Form>
-        </Modal>
+        <TaskModal
+          visible={modalVisible}
+          editingTask={editingTask}
+          onCancel={() => setModalVisible(false)}
+          onSubmit={handleSubmit}
+        />
       </Card>
     </div>
   );

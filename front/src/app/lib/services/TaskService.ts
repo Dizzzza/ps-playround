@@ -1,5 +1,5 @@
 import { graphQLClient } from '../graphql-client';
-import { Task, TaskInput } from '../graphql-client';
+import { Task, TaskInput } from '../../types/taskTypes';
 import { GET_TASKS, GET_TASK, CREATE_TASK, UPDATE_TASK, DELETE_TASK } from '../graphql/queries';
 
 export class TaskService {
