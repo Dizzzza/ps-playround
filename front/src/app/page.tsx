@@ -24,6 +24,7 @@ import {
 } from '@ant-design/icons';
 import { Task, TaskInput } from './lib/graphql-client';
 import { TaskService } from './lib/services/TaskService';
+import styles from './styles/Home.module.scss';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -191,10 +192,10 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className={styles.container}>
       <Card>
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">Менеджер задач</h1>
+        <div className={styles.header}>
+          <h1 className={styles.title}>Менеджер задач</h1>
           <Space>
             <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
               Создать задачу

@@ -8,9 +8,9 @@ services:
     ports:
       - "27017:27017"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=password123
-      - MONGO_INITDB_DATABASE=myapp
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_DB_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_DB_PASS}
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
     volumes:
       - mongodb_data:/data/db
       - ./mongo-init:/docker-entrypoint-initdb.d
@@ -32,6 +32,8 @@ services:
       - CORS_CREDENTIALS=true
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    depends_on:
+      - mongodb
     volumes:
       - ./back:/app
       - /app/node_modules
@@ -48,9 +50,6 @@ services:
     environment:
       - NODE_ENV=development
       - NEXT_PUBLIC_GRAPHQL_URL=${NEXT_PUBLIC_GRAPHQL_URL}
-    volumes:
-      - ./front:/app
-      - /app/node_modules
     depends_on:
       - back
     restart: unless-stopped
