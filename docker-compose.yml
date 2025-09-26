@@ -36,7 +36,6 @@ services:
     restart: unless-stopped
     networks:
       - app-network
-    network_mode: "host"
 
   front:
     build:
@@ -55,7 +54,6 @@ services:
     restart: unless-stopped
     networks:
       - app-network
-    network_mode: "host"
 
 # volumes:
 #   mongodb_data:
