@@ -31,7 +31,7 @@ services:
       - CORS_ORIGIN=*
       - CORS_CREDENTIALS=true
     extra_hosts:
-    - "host.docker.internal:host-gateway"
+      - "host.docker.internal:host-gateway"
     volumes:
       - ./back:/app
       - /app/node_modules
@@ -47,7 +47,7 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=development
-      - NEXT_PUBLIC_GRAPHQL_URL=http://localhost:3001/graphql
+      - NEXT_PUBLIC_GRAPHQL_URL=http://91.147.93.223//graphql
     volumes:
       - ./front:/app
       - /app/node_modules
