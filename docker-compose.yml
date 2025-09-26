@@ -34,8 +34,7 @@ services:
       - ./back:/app
       - /app/node_modules
     restart: unless-stopped
-    networks:
-      - app-network
+    network_mode: "host"
 
   front:
     build:
@@ -52,8 +51,7 @@ services:
     depends_on:
       - back
     restart: unless-stopped
-    networks:
-      - app-network
+    network_mode: "host"
 
 # volumes:
 #   mongodb_data:
