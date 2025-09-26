@@ -27,9 +27,11 @@ services:
     environment:
       - GRAPHQL_PATH=graphql
       - PORT=3001
-      - MONGODB_URI=mongodb://admin:root@localhost:27017/taskmanager?authSource=admin
+      - MONGODB_URI=mongodb://admin:root@host.docker.internal:27017/taskmanager?authSource=admin
       - CORS_ORIGIN=*
       - CORS_CREDENTIALS=true
+    extra_hosts:
+    - "host.docker.internal:host-gateway"
     volumes:
       - ./back:/app
       - /app/node_modules
