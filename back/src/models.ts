@@ -1,11 +1,11 @@
-import { getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
-import { Connection, Document, Model } from 'mongoose';
+import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
+import { Connection, Document, Model } from "mongoose";
 
 export enum Priority {
-  LOW = 'LOW',
-  MEDIUM = 'MEDIUM',
-  HIGH = 'HIGH',
-  CRITICAL = 'CRITICAL',
+  LOW = "LOW",
+  MEDIUM = "MEDIUM",
+  HIGH = "HIGH",
+  CRITICAL = "CRITICAL",
 }
 
 @modelOptions({ schemaOptions: { timestamps: true } })

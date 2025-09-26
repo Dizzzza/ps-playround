@@ -1,7 +1,7 @@
-import { composeMongoose } from 'graphql-compose-mongoose';
-import { schemaComposer } from 'graphql-compose';
-import { createTaskModel } from './app.model';
-import { Connection } from 'mongoose';
+import { composeMongoose } from "graphql-compose-mongoose";
+import { schemaComposer } from "graphql-compose";
+import { createTaskModel } from "./models";
+import { Connection } from "mongoose";
 
 export function buildGraphqlSchema(connection: Connection) {
   const TaskModel = createTaskModel(connection); // создаём модель на коннекте NestJS
