@@ -7,3 +7,4 @@ front/.next/
 node_modules
 next-env.d.ts
 *.generated.ts
+dist
