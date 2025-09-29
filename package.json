@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start:back": "cd back && pnpm install && pnpm run build && pnpm run start",
-    "start:front": "cd front && pnpm install && dotenv -e .env.local -- wait-on $NEXT_PUBLIC_GRAPHQL_URL && pnpm run build && pnpm run start",
+    "start:front": "cd front && pnpm install && pnpm run build && pnpm run start",
     "start": "pnpm install && concurrently \"pnpm run start:back\" \"pnpm run start:front\""
   },
   "devDependencies": {
