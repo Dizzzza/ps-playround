@@ -1,0 +1,8 @@
+node_modules
+dist
+.next
+.env
+*.log
+.idea
+.vscode
+*.generated.ts
