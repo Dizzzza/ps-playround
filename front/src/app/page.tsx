@@ -1,62 +1,61 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, message } from 'antd';
-import { Task, TaskInput } from './types/taskTypes';
-import { TaskService } from './lib/services/TaskService';
 import { TaskTable } from './components/TaskTable';
 import { TaskModal } from './components/TaskModal';
 import { PageHeader } from './components/Header';
+import {
+  useTaskManyQuery,
+  useTaskUpdateByIdMutation,
+  useTaskCreateMutation,
+  useTaskRemoveByIdMutation,
+  TaskManyQuery,
+} from './lib/tasks/tasks.generated';
+import { UpdateByIdTaskInput, CreateOneTaskInput } from '@/generated/types.generated';
 import styles from './styles/Home.module.scss';
 
 export default function Home() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [editingTask, setEditingTask] = useState<TaskManyQuery['taskMany'][number] | null>(null);
 
-  useEffect(() => {
-    loadTasks();
-  }, []);
+  const { data, loading, refetch } = useTaskManyQuery();
+  const [updateTask] = useTaskUpdateByIdMutation();
+  const [createTask] = useTaskCreateMutation();
+  const [deleteTask] = useTaskRemoveByIdMutation();
 
-  const loadTasks = async () => {
-    setLoading(true);
-    try {
-      const tasksData = await TaskService.getTasks();
-      setTasks(tasksData);
-    } catch {
-      message.error('Ошибка при загрузке задач');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const tasks = data?.taskMany ?? [];
 
   const handleCreate = () => {
     setEditingTask(null);
     setModalVisible(true);
   };
 
-  const handleEdit = (task: Task) => {
+  const handleEdit = (task: TaskManyQuery['taskMany'][number]) => {
     setEditingTask(task);
     setModalVisible(true);
   };
 
-  const handleSubmit = async (values: Partial<TaskInput>) => {
+  const handleSubmit = async (values: Partial<UpdateByIdTaskInput | CreateOneTaskInput>) => {
     try {
       if (editingTask) {
-        await TaskService.updateTask(editingTask._id, values);
+        await updateTask({
+          variables: {
+            _id: editingTask._id,
+            record: values as UpdateByIdTaskInput,
+          },
+        });
         message.success('Задача обновлена');
       } else {
-        const taskInput: TaskInput = {
-          title: values.title!,
-          description: values.description,
-          priority: values.priority!,
-        };
-        await TaskService.createTask(taskInput);
+        await createTask({
+          variables: {
+            record: values as CreateOneTaskInput,
+          },
+        });
         message.success('Задача создана');
       }
       setModalVisible(false);
-      loadTasks();
+      refetch();
     } catch {
       message.error('Ошибка при сохранении задачи');
     }
@@ -64,30 +63,40 @@ export default function Home() {
 
   const handleDelete = async (id: string) => {
     try {
-      await TaskService.deleteTask(id);
+      await deleteTask({ variables: { _id: id } });
       message.success('Задача удалена');
-      loadTasks();
+      refetch();
     } catch {
       message.error('Ошибка при удалении задачи');
     }
   };
 
-  const handleToggleComplete = async (task: Task) => {
+  const handleToggleComplete = async (task: TaskManyQuery['taskMany'][number]) => {
     try {
-      await TaskService.updateTask(task._id, {
-        completed: !task.completed,
+      await updateTask({
+        variables: {
+          _id: task._id,
+          record: { completed: !task.completed },
+        },
       });
       message.success(`Задача отмечена как ${task.completed ? 'незавершенная' : 'завершенная'}`);
-      loadTasks();
+      refetch();
     } catch {
       message.error('Ошибка при обновлении задачи');
     }
   };
 
+  const completedTasks = tasks.filter((task) => task.completed);
+  const hasCompletedTasks = completedTasks.length > 0;
+
   return (
     <div className={styles.container}>
       <Card>
-        <PageHeader onCreate={handleCreate} />
+        <PageHeader
+          onCreate={handleCreate}
+          onDeleteCompleted={refetch}
+          hasCompletedTasks={hasCompletedTasks}
+        />
 
         <TaskTable
           tasks={tasks}

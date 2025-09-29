@@ -1,25 +1,21 @@
 import { Modal, Form, Input, Select, Button, Space } from 'antd';
-import { Task, TaskInput } from '../types/taskTypes';
+import { TaskManyQuery } from '../lib/tasks/tasks.generated';
+import { CreateOneTaskInput, UpdateByIdTaskInput } from '@/types';
 
 interface TaskModalProps {
   visible: boolean;
-  editingTask: Task | null;
+  editingTask: TaskManyQuery['taskMany'][number] | null;
   onCancel: () => void;
-  onSubmit: (values: Partial<TaskInput>) => void;
+  onSubmit: (values: Partial<UpdateByIdTaskInput | CreateOneTaskInput>) => void;
 }
 
 const { Option } = Select;
 const { TextArea } = Input;
 
-export const TaskModal: React.FC<TaskModalProps> = ({
-  visible,
-  editingTask,
-  onCancel,
-  onSubmit,
-}) => {
+export function TaskModal({ visible, editingTask, onCancel, onSubmit }: TaskModalProps) {
   const [form] = Form.useForm();
 
-  const handleSubmit = async (values: Partial<TaskInput>) => {
+  const handleSubmit = async (values: Partial<UpdateByIdTaskInput | CreateOneTaskInput>) => {
     await onSubmit(values);
     form.resetFields();
   };
@@ -74,4 +70,4 @@ export const TaskModal: React.FC<TaskModalProps> = ({
       </Form>
     </Modal>
   );
-};
+}

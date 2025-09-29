@@ -41,6 +41,10 @@ async function startServer() {
     expressMiddleware(server),
   );
 
+  app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+  });
+
   const port = Number(process.env.PORT) || 3000;
   app.listen(port, () => {
     console.log(

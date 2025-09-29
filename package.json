@@ -8,6 +8,6 @@
     "start": "pnpm install && concurrently \"pnpm run start:back\" \"pnpm run start:front\""
   },
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "9.2.1"
   }
 }

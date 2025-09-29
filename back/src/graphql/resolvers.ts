@@ -28,5 +28,29 @@ export function buildGraphqlSchema(connection: Connection) {
     taskRemoveMany: TaskTC.mongooseResolvers.removeMany(),
   });
 
+  const DeleteCompletedResponseTC = schemaComposer.createObjectTC({
+    name: 'DeleteCompletedResponse',
+    fields: {
+      count: 'Int!',
+      tasks: [TaskTC],
+    },
+  });
+
+  schemaComposer.Mutation.addFields({
+    deleteCompletedTasks: {
+      type: DeleteCompletedResponseTC,
+      resolve: async () => {
+        const tasks = await TaskModel.find({ completed: true });
+
+        const result = await TaskModel.deleteMany({ completed: true });
+
+        return {
+          count: result.deletedCount || 0,
+          tasks,
+        };
+      },
+    },
+  });
+
   return schemaComposer.buildSchema();
 }

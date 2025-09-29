@@ -1,30 +1,24 @@
 import { Table, Switch, Button, Space, Tag } from 'antd';
 import { CheckOutlined, CloseOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Task } from '../types/taskTypes';
+import { type TaskManyQuery } from '../lib/tasks/tasks.generated';
 import { getPriorityColor } from '../utils/getPriorityColor';
 
 interface TaskTableProps {
-  tasks: Task[];
+  tasks: TaskManyQuery['taskMany'];
   loading: boolean;
-  onEdit: (task: Task) => void;
+  onEdit: (task: TaskManyQuery['taskMany'][number]) => void;
   onDelete: (id: string) => void;
-  onToggleComplete: (task: Task) => void;
+  onToggleComplete: (task: TaskManyQuery['taskMany'][number]) => void;
 }
 
-export const TaskTable: React.FC<TaskTableProps> = ({
-  tasks,
-  loading,
-  onEdit,
-  onDelete,
-  onToggleComplete,
-}) => {
+export function TaskTable({ tasks, loading, onEdit, onDelete, onToggleComplete }: TaskTableProps) {
   const columns = [
     {
       title: 'Статус',
       dataIndex: 'completed',
       key: 'completed',
       width: 100,
-      render: (completed: boolean, record: Task) => (
+      render: (completed: boolean, record: TaskManyQuery['taskMany'][number]) => (
         <Switch
           checked={completed}
           onChange={() => onToggleComplete(record)}
@@ -60,7 +54,7 @@ export const TaskTable: React.FC<TaskTableProps> = ({
       title: 'Действия',
       key: 'actions',
       width: 150,
-      render: (_: number, record: Task) => (
+      render: (_: number, record: TaskManyQuery['taskMany'][number]) => (
         <Space>
           <Button type="link" icon={<EditOutlined />} onClick={() => onEdit(record)}>
             Редактировать
@@ -82,4 +76,4 @@ export const TaskTable: React.FC<TaskTableProps> = ({
       pagination={{ pageSize: 10 }}
     />
   );
-};
+}

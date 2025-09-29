@@ -41,20 +41,20 @@ services:
     networks:
       - app-network
 
-  front:
-    build:
-      context: ./front
-      dockerfile: Dockerfile
-    ports:
-      - "${FRONT_PORT}:${FRONT_PORT}"
-    environment:
-      - NODE_ENV=development
-      - NEXT_PUBLIC_GRAPHQL_URL=${NEXT_PUBLIC_GRAPHQL_URL}
-    depends_on:
-      - back
-    restart: unless-stopped
-    networks:
-      - app-network
+  # front:
+  #   build:
+  #     context: ./front
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "${FRONT_PORT}:${FRONT_PORT}"
+  #   environment:
+  #     - NODE_ENV=development
+  #     - NEXT_PUBLIC_GRAPHQL_URL=${NEXT_PUBLIC_GRAPHQL_URL}
+  #   depends_on:
+  #     - back
+  #   restart: unless-stopped
+  #   networks:
+  #     - app-network
 
 volumes:
   mongodb_data:
