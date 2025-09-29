@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "dotenv -e .env.local -- sh -c 'wait-on tcp:$NEXT_PUBLIC_GRAPHQL_BACK_PORT && pnpm run codegen && next dev'",
+    "dev": "pnpm run codegen && next dev",
     "build": "dotenv -e .env.local -- sh -c 'wait-on tcp:$NEXT_PUBLIC_GRAPHQL_BACK_PORT && pnpm run codegen && next build'",
     "start": "next start",
     "lint": "eslint",

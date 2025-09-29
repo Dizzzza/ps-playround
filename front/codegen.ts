@@ -2,7 +2,7 @@ import 'dotenv/config'; // подтянет .env
 import type { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
-  schema: process.env.GRAPHQL_SCHEMA_URL || 'http://localhost:3001/graphql',
+  schema: process.env.NEXT_PUBLIC_GRAPHQL_CHECK_URL || 'http://localhost:3001/graphql',
   documents: 'src/**/*.graphql',
   generates: {
     'src/generated/types.generated.ts': {
