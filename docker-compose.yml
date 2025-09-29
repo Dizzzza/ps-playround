@@ -26,6 +26,7 @@ services:
     environment:
       - GRAPHQL_PATH=${GRAPHQL_PATH}
       - PORT=${BACK_PORT}
+      - BACK_PORT=${BACK_PORT}
       - MONGODB_URI=${MONGODB_URI}
       - GRAPHQL_INTROSPECTION=${GRAPHQL_INTROSPECTION}
       - CORS_ORIGIN=*
