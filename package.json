@@ -5,9 +5,10 @@
   "scripts": {
     "start:back": "cd back && pnpm install && pnpm run build && pnpm run start",
     "start:front": "cd front && pnpm install && pnpm run build && pnpm run start",
-    "start": "pnpm install && concurrently \"pnpm run start:back\" \"pnpm run start:front\""
+    "start": "concurrently -k -n back,front -c green,blue \"pnpm run start:back\" \"wait-on http://localhost:3001/graphql && pnpm run start:front\""
   },
   "devDependencies": {
-    "concurrently": "9.2.1"
+    "concurrently": "9.2.1",
+    "wait-on": "^9.0.1"
   }
 }
