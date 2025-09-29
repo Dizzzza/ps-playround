@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "pnpm run codegen && next dev --turbopack",
-    "build": "pnpm run codegen && next build --turbopack",
+    "dev": "pnpm run codegen && next dev",
+    "build": "pnpm run codegen && next build",
     "start": "next start",
     "lint": "eslint",
     "codegen": "graphql-codegen"
