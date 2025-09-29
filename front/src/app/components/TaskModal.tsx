@@ -1,6 +1,6 @@
 import { Modal, Form, Input, Select, Button, Space } from 'antd';
 import { TaskManyQuery } from '../lib/tasks/tasks.generated';
-import { CreateOneTaskInput, UpdateByIdTaskInput } from '@/types';
+import { CreateOneTaskInput, UpdateByIdTaskInput } from '@/generated/types.generated';
 
 interface TaskModalProps {
   visible: boolean;
