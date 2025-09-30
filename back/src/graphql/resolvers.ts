@@ -28,6 +28,13 @@ export function buildGraphqlSchema(connection: Connection) {
     taskRemoveMany: TaskTC.mongooseResolvers.removeMany(),
   });
 
+  const DeleteCompletedInputTC = schemaComposer.createInputTC({
+    name: 'DeleteCompletedInput',
+    fields: {
+      limit: 'Int!',
+    },
+  });
+
   const DeleteCompletedResponseTC = schemaComposer.createObjectTC({
     name: 'DeleteCompletedResponse',
     fields: {
@@ -38,11 +45,19 @@ export function buildGraphqlSchema(connection: Connection) {
 
   schemaComposer.Mutation.addFields({
     deleteCompletedTasks: {
+      args: {
+        input: DeleteCompletedInputTC,
+      },
       type: DeleteCompletedResponseTC,
-      resolve: async () => {
-        const tasks = await TaskModel.find({ completed: true });
+      resolve: async (_: unknown, { input }: { input: { limit: number } }) => {
+        const tasks = await TaskModel.find({ completed: true }).limit(input.limit).exec();
 
-        const result = await TaskModel.deleteMany({ completed: true });
+        if (tasks.length === 0) {
+          return { count: 0, tasks: [] };
+        }
+
+        const ids = tasks.map((t) => t._id);
+        const result = await TaskModel.deleteMany({ _id: { $in: ids } });
 
         return {
           count: result.deletedCount || 0,

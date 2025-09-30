@@ -2,7 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   concurrently: 9.2.1
-  dotenv-cli: ^10.0.0
+  dotenv-cli: 10.0.0
   wait-on: 9.0.1
 
 devDependencies:
